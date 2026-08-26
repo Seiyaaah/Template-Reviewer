@@ -1,4 +1,4 @@
-const CACHE_NAME = 'voilearn-cache-v1';
+const CACHE_NAME = 'voilearn-cache-v2';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -43,20 +43,42 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// 3. Fetch event: serve from cache, fallback to network and update cache dynamically
+// 3. Fetch event with smart strategies:
+// - For .json files: Network-First (always gets the latest updates online, falls back to cache offline)
+// - For static assets (CSS, JS, icons): Cache-First
 self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      return cachedResponse || fetch(event.request).then((fetchResponse) => {
-        return caches.open(CACHE_NAME).then((cache) => {
-          cache.put(event.request, fetchResponse.clone());
-          return fetchResponse;
+  const url = new URL(event.request.url);
+
+  // If the request is for a JSON data file, use Network-First
+  if (url.pathname.endsWith('.json')) {
+    event.respondWith(
+      fetch(event.request)
+        .then((networkResponse) => {
+          return caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, networkResponse.clone());
+            return networkResponse;
+          });
+        })
+        .catch(() => {
+          return caches.match(event.request);
+        })
+    );
+  } else {
+    // Standard Cache-First strategy for scripts, styles, and markup
+    event.respondWith(
+      caches.match(event.request).then((cachedResponse) => {
+        return cachedResponse || fetch(event.request).then((fetchResponse) => {
+          return caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, fetchResponse.clone());
+            return fetchResponse;
+          });
         });
-      });
-    }).catch(() => {
-      if (event.request.headers.get('accept').includes('text/html')) {
-        return caches.match('./index.html');
-      }
-    })
-  );
+      }).catch(() => {
+        const acceptHeader = event.request.headers.get('accept');
+        if (acceptHeader && acceptHeader.includes('text/html')) {
+          return caches.match('./index.html');
+        }
+      })
+    );
+  }
 });
