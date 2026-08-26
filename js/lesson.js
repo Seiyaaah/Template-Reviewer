@@ -1,6 +1,8 @@
 export async function renderHome(container) {
   try {
-    const res = await fetch('data/subjects.json');
+    // Cache-buster version: Update this number when you update subjects.json
+    const APP_VERSION = '1.0.1';
+    const res = await fetch(`data/subjects.json?v=${APP_VERSION}`);
     const subjects = await res.json();
 
     container.innerHTML = `
@@ -23,7 +25,9 @@ export async function renderHome(container) {
 
 export async function renderLesson(container, subjectId) {
   try {
-    const res = await fetch('data/lessons.json');
+    // Cache-buster version: Update this number when you update lessons.json
+    const APP_VERSION = '1.0.1';
+    const res = await fetch(`data/lessons.json?v=${APP_VERSION}`);
     const lessonsData = await res.json();
     const lesson = lessonsData[subjectId] || { title: "Lesson Not Found", content: "Content coming soon." };
 
