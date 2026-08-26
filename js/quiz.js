@@ -38,9 +38,7 @@ export async function renderQuiz(container, subjectId, customQuestions = null) {
 
     // If no pre-filtered questions were passed, fetch them directly with cache-busting
     if (!questions) {
-      // Cache-buster version: Update this number (e.g., 1.0.1 -> 1.0.2) whenever you push question updates to GitHub
-      const APP_VERSION = '1.0.1';
-      const res = await fetch(`data/questions.json?v=${APP_VERSION}`);
+      const res = await fetch('data/questions.json?v=' + Date.now());
       const allQuestions = await res.json();
       questions = allQuestions[subjectId] || [];
     }
