@@ -1,8 +1,6 @@
 export async function renderNotes(container, subjectId = null) {
   try {
-    // Cache-buster version: Update this number (e.g., 1.0.1 -> 1.0.2) whenever you push note updates to GitHub
-    const APP_VERSION = '1.0.1';
-    const res = await fetch(`data/notes.json?v=${APP_VERSION}`);
+    const res = await fetch('data/notes.json?v=' + Date.now());
     const notesData = await res.json();
 
     // SCENARIO 1: A specific subject ID was clicked (Show Detail Page)
