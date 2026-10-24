@@ -858,3 +858,68 @@ li{
         overflow-x: auto;
     }
 }
+.subjects-grid {
+    display: grid;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.note-card {
+    cursor: pointer;
+    transition: .2s;
+}
+
+.note-card:hover {
+    transform: translateY(-4px);
+}
+
+.note-card button {
+    margin-top: 1rem;
+}
+
+.notes-page {
+    max-width: 900px;
+    margin: auto;
+}
+
+.note-summary {
+    color: var(--text-muted);
+    margin: 1rem 0;
+}
+
+.notes-content {
+    margin-top: 2rem;
+}
+
+.note-section {
+    margin-bottom: 2rem;
+}
+
+.note-section h2 {
+    margin-bottom: .8rem;
+}
+
+.note-section p {
+    margin-bottom: 1rem;
+    line-height: 1.8;
+}
+
+.note-section ul {
+    margin-left: 1.5rem;
+    margin-top: .5rem;
+    line-height: 1.8;
+}
+
+.notes-actions {
+    margin-top: 2rem;
+    display: flex;
+    gap: 1rem;
+}
+
+.secondary-btn {
+    background: var(--text-muted);
+}
+
+.secondary-btn:hover {
+    background: #475569;
+}
