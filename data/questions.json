@@ -1,0 +1,422 @@
+[
+  {
+    "id": "hci_evaluation_methods",
+    "subjectId": "hci_evaluation_methods",
+    "questionType": "Identification, Enumeration",
+    "questions": [
+      {
+        "type": "identification",
+        "question": "What concept refers to how easy, efficient, and effective a system is to use?",
+        "answer": "Usability"
+      },
+      {
+        "type": "identification",
+        "question": "What type of usability measurement is determined through performance tasks such as counting clicks or timing an action?",
+        "answer": "Quantitative"
+      },
+      {
+        "type": "identification",
+        "question": "What type of usability measurement is based on user opinions, feedback, and surveys regarding how simple or tiring a system feels?",
+        "answer": "Qualitative"
+      },
+      {
+        "type": "identification",
+        "question": "What evaluation tool often includes questions involving ease of use, ease of learning, fatigue, and simple preference?",
+        "answer": "Usability Survey"
+      },
+      {
+        "type": "identification",
+        "question": "What concept refers to the overall feeling, satisfaction, and emotional connection users have while interacting with a system?",
+        "answer": "User Experience (UX)"
+      },
+      {
+        "type": "identification",
+        "question": "What is the simplest evaluation method that involves talking to users or watching them use the system?",
+        "answer": "Interview / Observation"
+      },
+      {
+        "type": "identification",
+        "question": "What evaluation method involves users thinking aloud while using the system to describe what they are doing and why?",
+        "answer": "Cognitive Walkthrough"
+      },
+      {
+        "type": "identification",
+        "question": "What evaluation method involves usability experts reviewing a system using established principles?",
+        "answer": "Expert Heuristic Evaluation"
+      },
+      {
+        "type": "identification",
+        "question": "What term is used for the established principles used by usability experts during an evaluation?",
+        "answer": "Heuristics"
+      },
+      {
+        "type": "identification",
+        "question": "Whose ten General UI heuristics are highlighted as standard principles for expert heuristic evaluation?",
+        "answer": "Nielsen"
+      },
+      {
+        "type": "identification",
+        "question": "Which UI heuristic states that the system should keep users informed about what is going on through appropriate feedback?",
+        "answer": "Visibility of system status"
+      },
+      {
+        "type": "identification",
+        "question": "Which UI heuristic emphasizes speaking the users' language with words, phrases, and concepts familiar to the user rather than system-oriented terms?",
+        "answer": "Match between system and the real world"
+      },
+      {
+        "type": "identification",
+        "question": "Which UI heuristic provides users with freedom and an easy way to exit unwanted system states?",
+        "answer": "User control and freedom"
+      },
+      {
+        "type": "identification",
+        "question": "Which UI heuristic states that users should not have to wonder whether different words, situations, or actions mean the same thing?",
+        "answer": "Consistency and standards"
+      },
+      {
+        "type": "identification",
+        "question": "Which UI heuristic focuses on eliminating error-prone conditions or warning users before they commit to an action?",
+        "answer": "Error prevention"
+      },
+      {
+        "type": "identification",
+        "question": "Which UI heuristic minimizes the user's memory load by making objects, actions, and options visible rather than forcing memory retrieval?",
+        "answer": "Recognition rather than recall"
+      },
+      {
+        "type": "identification",
+        "question": "Which UI heuristic allows shortcuts for expert users to speed up interactions while still accommodating inexperienced users?",
+        "answer": "Flexibility and efficiency of use"
+      },
+      {
+        "type": "identification",
+        "question": "Which UI heuristic specifies that dialogues should not contain information that is irrelevant or rarely needed?",
+        "answer": "Aesthetic and minimalist design"
+      },
+      {
+        "type": "identification",
+        "question": "Which UI heuristic ensures error messages are expressed in plain language, indicate the problem, and suggest a constructive solution?",
+        "answer": "Help users recognize, diagnose, and recover from errors"
+      },
+      {
+        "type": "identification",
+        "question": "Which UI heuristic provides information and documentation to help users complete their tasks when needed?",
+        "answer": "Help and documentation"
+      },
+      {
+        "type": "identification",
+        "question": "What evaluation step involves collecting numerical or survey-based data to measure interface effectiveness?",
+        "answer": "Measurement"
+      },
+      {
+        "type": "identification",
+        "question": "What authorization must participants give before participating in a user interface evaluation?",
+        "answer": "Informed consent"
+      },
+      {
+        "type": "identification",
+        "question": "What fundamental right must participants always retain whenever they feel uncomfortable during an evaluation?",
+        "answer": "Right to stop"
+      },
+      {
+        "type": "identification",
+        "question": "In quantitative usability, what metric measures the duration required to complete an action?",
+        "answer": "Time"
+      },
+      {
+        "type": "identification",
+        "question": "In quantitative usability, what metric measures the number of user inputs required to complete an action?",
+        "answer": "Number of clicks"
+      },
+      {
+        "type": "identification",
+        "question": "What specific user insights are revealed by a cognitive walkthrough during task performance?",
+        "answer": "Thought process and points of confusion"
+      },
+      {
+        "type": "identification",
+        "question": "What primary benefit does interview/observation offer that designers might otherwise experience?",
+        "answer": "Helps identify problems that designers might miss"
+      },
+      {
+        "type": "identification",
+        "question": "Besides satisfaction and overall feeling, what emotional aspect is part of User Experience (UX)?",
+        "answer": "Emotional connection"
+      },
+      {
+        "type": "identification",
+        "question": "What type of UI evaluation data involves satisfaction scores, error rates, or task completion time?",
+        "answer": "Measurement data"
+      },
+      {
+        "type": "identification",
+        "question": "Ethical UI evaluation guidelines state that evaluations must be both safe and what?",
+        "answer": "Respectful"
+      },
+      {
+        "type": "enumeration",
+        "question": "Enumerate the three attributes used to define usability in Chapter 5.",
+        "answers": [
+          "Easy to use",
+          "Efficient to use",
+          "Effective to use"
+        ]
+      },
+      {
+        "type": "enumeration",
+        "question": "Enumerate the two classifications of usability measurements.",
+        "answers": [
+          "Quantitative",
+          "Qualitative"
+        ]
+      },
+      {
+        "type": "enumeration",
+        "question": "Enumerate two performance task metrics used for quantitative usability measurement.",
+        "answers": [
+          "How many clicks",
+          "How much time it takes to complete an action"
+        ]
+      },
+      {
+        "type": "enumeration",
+        "question": "Enumerate three sources of qualitative usability data.",
+        "answers": [
+          "User opinions",
+          "Feedback",
+          "Surveys"
+        ]
+      },
+      {
+        "type": "enumeration",
+        "question": "Enumerate four common topics addressed in a Usability Survey.",
+        "answers": [
+          "Ease of use",
+          "Ease of learning",
+          "Fatigue",
+          "Simple preference"
+        ]
+      },
+      {
+        "type": "enumeration",
+        "question": "Enumerate three aspects of interaction covered by User Experience (UX).",
+        "answers": [
+          "Enjoyable",
+          "Intuitive",
+          "Stress-free"
+        ]
+      },
+      {
+        "type": "enumeration",
+        "question": "Enumerate the three UI evaluation methods discussed in the material.",
+        "answers": [
+          "Interview / Observation",
+          "Cognitive Walkthrough",
+          "Expert Heuristic Evaluation"
+        ]
+      },
+      {
+        "type": "enumeration",
+        "question": "Enumerate the two ways to conduct an interview/observation evaluation.",
+        "answers": [
+          "Talk to users",
+          "Watch users use the system"
+        ]
+      },
+      {
+        "type": "enumeration",
+        "question": "Enumerate the two things users explain while performing a cognitive walkthrough.",
+        "answers": [
+          "What they are doing",
+          "Why they are doing it"
+        ]
+      },
+      {
+        "type": "enumeration",
+        "question": "Enumerate two key insights revealed through a cognitive walkthrough.",
+        "answers": [
+          "User thought process",
+          "Points of confusion"
+        ]
+      },
+      {
+        "type": "enumeration",
+        "question": "Enumerate the first five of Nielsen's ten General UI heuristics.",
+        "answers": [
+          "Visibility of system status",
+          "Match between system and the real world",
+          "User control and freedom",
+          "Consistency and standards",
+          "Error prevention"
+        ]
+      },
+      {
+        "type": "enumeration",
+        "question": "Enumerate the remaining five (6 to 10) of Nielsen's ten General UI heuristics.",
+        "answers": [
+          "Recognition rather than recall",
+          "Flexibility and efficiency of use",
+          "Aesthetic and minimalist design",
+          "Help users recognize, diagnose, and recover from errors",
+          "Help and documentation"
+        ]
+      },
+      {
+        "type": "enumeration",
+        "question": "Enumerate all ten of Nielsen's General UI heuristics.",
+        "answers": [
+          "Visibility of system status",
+          "Match between system and the real world",
+          "User control and freedom",
+          "Consistency and standards",
+          "Error prevention",
+          "Recognition rather than recall",
+          "Flexibility and efficiency of use",
+          "Aesthetic and minimalist design",
+          "Help users recognize, diagnose, and recover from errors",
+          "Help and documentation"
+        ]
+      },
+      {
+        "type": "enumeration",
+        "question": "Enumerate three types of data collected during the measurement stage of evaluation.",
+        "answers": [
+          "Time",
+          "Error rates",
+          "Satisfaction scores"
+        ]
+      },
+      {
+        "type": "enumeration",
+        "question": "Enumerate two safety and ethical guidelines for participant evaluations.",
+        "answers": [
+          "Users should give informed consent before participating",
+          "Participants should always have the right to stop whenever they feel uncomfortable"
+        ]
+      },
+      {
+        "type": "enumeration",
+        "question": "Enumerate the three key outcomes ensured by evaluating a user interface as listed in the summary.",
+        "answers": [
+          "The system is easy to use (usability)",
+          "The experience is positive and enjoyable (UX)",
+          "The process is safe, ethical, and user-centered"
+        ]
+      },
+      {
+        "type": "enumeration",
+        "question": "Enumerate two qualitative perceptions users may have about a system's interface.",
+        "answers": [
+          "How simple the system feels",
+          "How tiring the system feels"
+        ]
+      },
+      {
+        "type": "enumeration",
+        "question": "Enumerate two forms of data collected to measure effectiveness in UI evaluation.",
+        "answers": [
+          "Numerical data",
+          "Survey-based data"
+        ]
+      },
+      {
+        "type": "enumeration",
+        "question": "Enumerate the two core criteria used to evaluate user interfaces.",
+        "answers": [
+          "Usability",
+          "User Experience (UX)"
+        ]
+      },
+      {
+        "type": "enumeration",
+        "question": "Enumerate three key qualities of user experience beyond basic functionality.",
+        "answers": [
+          "Overall feeling",
+          "Satisfaction",
+          "Emotional connection"
+        ]
+      },
+      {
+        "type": "enumeration",
+        "question": "Enumerate two specific qualitative feedback descriptors mentioned for UX.",
+        "answers": [
+          "Intuitive",
+          "Stress-free"
+        ]
+      },
+      {
+        "type": "enumeration",
+        "question": "Enumerate two principles of ethical participant treatment during interface testing.",
+        "answers": [
+          "Informed consent",
+          "Right to stop"
+        ]
+      },
+      {
+        "type": "enumeration",
+        "question": "Enumerate two characteristics of expert heuristic evaluation.",
+        "answers": [
+          "Conducted by usability experts",
+          "Uses established principles called heuristics"
+        ]
+      },
+      {
+        "type": "enumeration",
+        "question": "Enumerate two reasons why interview/observation is beneficial.",
+        "answers": [
+          "It is the simplest evaluation method",
+          "Helps identify problems that designers might miss"
+        ]
+      },
+      {
+        "type": "enumeration",
+        "question": "Enumerate two requirements for evaluation safety and ethics.",
+        "answers": [
+          "Safe",
+          "Respectful"
+        ]
+      },
+      {
+        "type": "enumeration",
+        "question": "Enumerate two task performance dimensions measured quantitatively.",
+        "answers": [
+          "Clicks",
+          "Time"
+        ]
+      },
+      {
+        "type": "enumeration",
+        "question": "Enumerate the two main pillars of Nielsen's heuristics that address errors.",
+        "answers": [
+          "Error prevention",
+          "Help users recognize, diagnose, and recover from errors"
+        ]
+      },
+      {
+        "type": "enumeration",
+        "question": "Enumerate the two heuristics that deal with system language and system state visibility.",
+        "answers": [
+          "Visibility of system status",
+          "Match between system and the real world"
+        ]
+      },
+      {
+        "type": "enumeration",
+        "question": "Enumerate the two heuristics that address system design aesthetics and documentation.",
+        "answers": [
+          "Aesthetic and minimalist design",
+          "Help and documentation"
+        ]
+      },
+      {
+        "type": "enumeration",
+        "question": "Enumerate the two heuristics that focus on user memory and user flexibility.",
+        "answers": [
+          "Recognition rather than recall",
+          "Flexibility and efficiency of use"
+        ]
+      }
+    ]
+  }
+]

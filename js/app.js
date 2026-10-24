@@ -3,204 +3,116 @@ import { initRouter } from "./router.js";
 document.addEventListener("DOMContentLoaded", async () => {
     console.log("🧠 Starting VoiLearn...");
 
-    await registerServiceWorker();
-
     initDarkMode();
-
+    await registerServiceWorker();
     initRouter();
 
     console.log("✅ VoiLearn Ready");
 });
 
-/* ======================================================
+/* ==========================================================
    SERVICE WORKER
-====================================================== */
+========================================================== */
 
 async function registerServiceWorker() {
-
-    if (!("serviceWorker" in navigator))
-        return;
+    if (!("serviceWorker" in navigator)) return;
 
     try {
-
-        const registration =
-            await navigator.serviceWorker.register(
-                "./service-worker.js"
-            );
+        const registration = await navigator.serviceWorker.register("./service-worker.js");
 
         console.log("✅ Service Worker Registered");
 
-        // Check for updates every hour
+        // Check for updates immediately
+        registration.update();
+
+        // Check every hour
         setInterval(() => {
             registration.update();
-        }, 60 * 60 * 1000);
+        }, 1000 * 60 * 60);
 
-        registration.addEventListener(
-            "updatefound",
-            () => {
+        registration.addEventListener("updatefound", () => {
+            const installingWorker = registration.installing;
 
-                const worker =
-                    registration.installing;
+            if (!installingWorker) return;
 
-                if (!worker)
-                    return;
+            installingWorker.addEventListener("statechange", () => {
+                if (
+                    installingWorker.state === "installed" &&
+                    navigator.serviceWorker.controller
+                ) {
+                    const update = confirm(
+                        "A new version of VoiLearn is available.\n\nReload now?"
+                    );
 
-                worker.addEventListener(
-                    "statechange",
-                    () => {
-
-                        if (
-                            worker.state === "installed" &&
-                            navigator.serviceWorker.controller
-                        ) {
-
-                            const update =
-                                confirm(
-                                    "A new version of VoiLearn is available.\n\nUpdate now?"
-                                );
-
-                            if (update)
-                                window.location.reload();
-
-                        }
-
+                    if (update) {
+                        window.location.reload();
                     }
-                );
-
-            }
-        );
+                }
+            });
+        });
 
         let refreshing = false;
 
-        navigator.serviceWorker.addEventListener(
-            "controllerchange",
-            () => {
+        navigator.serviceWorker.addEventListener("controllerchange", () => {
+            if (refreshing) return;
 
-                if (refreshing)
-                    return;
+            refreshing = true;
+            window.location.reload();
+        });
 
-                refreshing = true;
-
-                window.location.reload();
-
-            }
-        );
-
+    } catch (err) {
+        console.error("❌ Failed to register Service Worker:", err);
     }
-
-    catch (err) {
-
-        console.error(
-            "❌ Service Worker Error:",
-            err
-        );
-
-    }
-
 }
 
-/* ======================================================
+/* ==========================================================
    DARK MODE
-====================================================== */
+========================================================== */
 
 function initDarkMode() {
+    const button = document.getElementById("themeToggleBtn");
 
-    const button =
-        document.getElementById(
-            "themeToggleBtn"
-        );
+    if (!button) return;
 
-    if (!button)
-        return;
+    const savedTheme =
+        localStorage.getItem("voilearn-theme") || "light";
 
-    const saved =
-        localStorage.getItem(
-            "voilearn-theme"
-        ) || "light";
+    applyTheme(savedTheme);
 
-    applyTheme(saved);
+    button.addEventListener("click", () => {
+        const current =
+            document.documentElement.getAttribute("data-theme");
 
-    button.addEventListener(
-        "click",
-        () => {
-
-            const next =
-                document.documentElement.getAttribute(
-                    "data-theme"
-                ) === "dark"
-                    ? "light"
-                    : "dark";
-
-            applyTheme(next);
-
-        }
-    );
-
+        applyTheme(current === "dark" ? "light" : "dark");
+    });
 }
 
 function applyTheme(theme) {
-
-    const button =
-        document.getElementById(
-            "themeToggleBtn"
-        );
+    const button = document.getElementById("themeToggleBtn");
 
     if (theme === "dark") {
-
-        document.documentElement.setAttribute(
-            "data-theme",
-            "dark"
-        );
+        document.documentElement.setAttribute("data-theme", "dark");
 
         if (button)
-            button.textContent =
-                "☀️ Light";
-
-    }
-
-    else {
-
-        document.documentElement.removeAttribute(
-            "data-theme"
-        );
+            button.textContent = "☀️ Light";
+    } else {
+        document.documentElement.removeAttribute("data-theme");
 
         if (button)
-            button.textContent =
-                "🌙 Dark";
-
+            button.textContent = "🌙 Dark";
     }
 
-    localStorage.setItem(
-        "voilearn-theme",
-        theme
-    );
-
+    localStorage.setItem("voilearn-theme", theme);
 }
 
-/* ======================================================
-   GLOBAL ERROR HANDLER
-====================================================== */
+/* ==========================================================
+   GLOBAL ERROR HANDLING
+========================================================== */
 
-window.addEventListener(
-    "error",
-    (event) => {
+window.addEventListener("error", (event) => {
+    console.error("Unhandled Error:", event.error);
+});
 
-        console.error(
-            "Unhandled Error:",
-            event.error
-        );
-
-    }
-);
-
-window.addEventListener(
-    "unhandledrejection",
-    (event) => {
-
-        console.error(
-            "Unhandled Promise:",
-            event.reason
-        );
-
-    }
-);
+window.addEventListener("unhandledrejection", (event) => {
+    console.error("Unhandled Promise:", event.reason);
+});

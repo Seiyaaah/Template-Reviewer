@@ -1,37 +1,86 @@
 import { renderQuiz } from "./quiz.js";
 
 export async function renderQuizSetup(container, subjectId) {
-    try {
-        const res = await fetch(`data/questions.json?v=${Date.now()}`);
 
-        if (!res.ok) {
-            throw new Error("Unable to load questions.");
+    console.log("Quiz Subject:", subjectId);
+
+    try {
+
+        const response = await fetch(`data/questions.json?v=${Date.now()}`);
+
+        if (!response.ok) {
+            throw new Error("Unable to load questions.json");
         }
 
-        const allQuestions = await res.json();
+        let data = await response.json();
 
-        const questions = allQuestions.filter(
-            (q) => q.subjectId === subjectId
-        );
+        // Support both object and array JSON
+        if (!Array.isArray(data)) {
+            data = Object.values(data);
+        }
+
+        console.log("Questions:", data);
+    const res = await fetch(`data/questions.json?v=${Date.now()}`);
+
+    if (!res.ok) {
+        throw new Error("Unable to load questions.json");
+    }
+
+    const allQuestions = await res.json();
+
+    console.log(allQuestions);
+
+    const lesson = allQuestions.find(
+        lesson =>
+            lesson.subjectId === subjectId ||
+            lesson.id === subjectId
+    )
+
+console.log("Lesson:", lesson);
+
+if (!lesson) {
+
+    container.innerHTML = `
+        <div class="card">
+            <h2>No Questions Found</h2>
+            <p>No quiz exists for this lesson.</p>
+        </div>
+    `;
+
+    return;
+}
+
+// Get the questions inside that lesson
+const questions = lesson.questions;
+
+console.log("Questions:", questions);
+
+        console.log("Filtered:", questions);
 
         if (questions.length === 0) {
+
             container.innerHTML = `
                 <div class="card">
                     <h2>No Questions Found</h2>
 
                     <p>
-                        There are no questions available for this subject yet.
+                        No quiz questions exist for this lesson.
                     </p>
 
-                    <button onclick="window.location.hash='#home'">
-                        Back Home
+                    <p>
+                        <strong>Subject:</strong> ${subjectId}
+                    </p>
+
+                    <button onclick="window.location.hash='#lesson/${subjectId}'">
+                        Back to Lesson
                     </button>
                 </div>
             `;
+
             return;
         }
 
-        const typeLabels = {
+        const labels = {
             "multiple-choice": "Multiple Choice",
             "true-false": "True / False",
             "modified-true-false": "Modified True / False",
@@ -39,84 +88,56 @@ export async function renderQuizSetup(container, subjectId) {
             "enumeration": "Enumeration"
         };
 
-        const availableTypes = [...new Set(questions.map((q) => q.type))].sort();
+        const availableTypes = [...new Set(
+            questions.map(q => q.type)
+        )];
 
         container.innerHTML = `
-            <div class="card" style="max-width:550px;margin:40px auto;">
+            <div class="card" style="max-width:600px;margin:auto;">
 
-                <h2 style="margin-bottom:10px;">
-                    Customize Quiz
-                </h2>
+                <h2>Customize Quiz</h2>
 
-                <p style="color:var(--text-muted);margin-bottom:25px;">
-                    Choose which type of questions you want to practice.
+                <p>
+                    Select the type of questions you want.
                 </p>
 
-                <label
-                    for="quizTypeSelect"
-                    style="
-                        display:block;
-                        margin-bottom:8px;
-                        font-weight:600;
-                    "
-                >
-                    Question Type
-                </label>
-
                 <select
-                    id="quizTypeSelect"
-                    style="
-                        width:100%;
-                        padding:12px;
-                        font-size:16px;
-                        border-radius:10px;
-                        border:1px solid var(--border-color);
-                        background:var(--bg-color);
-                        color:var(--text-main);
-                        margin-bottom:25px;
-                    "
+                    id="quizType"
+                    style="width:100%;margin:20px 0;padding:12px;"
                 >
+
                     <option value="all">
-                        🎲 Mix All Types (${questions.length} Questions)
+                        Mix All (${questions.length})
                     </option>
 
-                    ${availableTypes
-                        .map((type) => {
-                            const count = questions.filter(
-                                (q) => q.type === type
-                            ).length;
+                    ${availableTypes.map(type => {
 
-                            return `
-                                <option value="${type}">
-                                    ${typeLabels[type] || type}
-                                    (${count})
-                                </option>
-                            `;
-                        })
-                        .join("")}
+                        const count = questions.filter(
+                            q => q.type === type
+                        ).length;
+
+                        return `
+                            <option value="${type}">
+                                ${labels[type] ?? type} (${count})
+                            </option>
+                        `;
+
+                    }).join("")}
+
                 </select>
 
-                <div
-                    style="
-                        display:flex;
-                        gap:15px;
-                    "
-                >
+                <div style="display:flex;gap:12px;">
 
                     <button
-                        id="startCustomQuizBtn"
-                        style="
-                            flex:1;
-                        "
+                        id="startQuiz"
+                        style="flex:1;"
                     >
-                        🚀 Start Quiz
+                        Start Quiz
                     </button>
 
                     <button
-                        id="cancelQuizBtn"
-                        style="
-                            flex:1;
-                        "
+                        id="cancelQuiz"
+                        style="flex:1;"
                     >
                         Cancel
                     </button>
@@ -127,24 +148,26 @@ export async function renderQuizSetup(container, subjectId) {
         `;
 
         document
-            .getElementById("cancelQuizBtn")
+            .getElementById("cancelQuiz")
             .addEventListener("click", () => {
-                window.location.hash = "#home";
+
+                window.location.hash = `#lesson/${subjectId}`;
+
             });
 
         document
-            .getElementById("startCustomQuizBtn")
+            .getElementById("startQuiz")
             .addEventListener("click", () => {
 
-                const selectedType =
-                    document.getElementById("quizTypeSelect").value;
+                const selected =
+                    document.getElementById("quizType").value;
 
                 const filteredQuestions =
-                    selectedType === "all"
+                    selected === "all"
                         ? questions
                         : questions.filter(
-                              (q) => q.type === selectedType
-                          );
+                            q => q.type === selected
+                        );
 
                 renderQuiz(
                     container,
@@ -154,7 +177,10 @@ export async function renderQuizSetup(container, subjectId) {
 
             });
 
-    } catch (err) {
+    }
+
+    catch (err) {
+
         console.error(err);
 
         container.innerHTML = `
@@ -163,14 +189,16 @@ export async function renderQuizSetup(container, subjectId) {
                 <h2>Quiz Setup Error</h2>
 
                 <p>
-                    Failed to load quiz setup.
-                </p>
-
-                <p style="color:var(--text-muted);">
                     ${err.message}
                 </p>
 
+                <button onclick="window.location.hash='#home'">
+                    Back Home
+                </button>
+
             </div>
         `;
+
     }
+
 }

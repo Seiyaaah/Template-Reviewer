@@ -1,0 +1,78 @@
+[
+  {
+    "id": "hci_evaluation_methods",
+    "subjectId": "hci_evaluation_methods",
+    "title": "Human-Computer Interaction: UI Evaluation Criteria and Methods",
+    "summary": "Evaluating a user interface involves assessing usability and user experience through various evaluation methods while maintaining safety and ethical standards.",
+    "sections": [
+      {
+        "title": "1. Evaluation Criteria: Usability",
+        "paragraphs": [
+          "Usability is about how easy, efficient, and effective a system is to use.",
+          "Usability Survey: Often includes questions involving the ease of use, ease of learning, fatigue, simple preference, and other questions specific to the given interface."
+        ],
+        "list": [
+          "Quantitative: Measured through performance tasks (e.g., how many clicks, how much time it takes to complete an action).",
+          "Qualitative: Based on user opinions, feedback, and surveys (e.g., how simple or tiring the system feels)."
+        ]
+      },
+      {
+        "title": "Evaluation Criteria: User Experience (UX)",
+        "paragraphs": [
+          "UX is more than usability it’s about the overall feeling, satisfaction, and emotional connection users have while interacting with the system. Covers how enjoyable, intuitive, and stress-free the app feels."
+        ],
+        "list": []
+      },
+      {
+        "title": "2. Evaluation Methods",
+        "paragraphs": [],
+        "list": [
+          "INTERVIEW / OBSERVATION: The simplest way: talk to users or watch them use the system. Helps identify problems that designers might miss.",
+          "COGNITIVE WALKTHROUGH: Users \"think aloud\" while using the system. They describe what they are doing and why. This reveals their thought process and points of confusion.",
+          "EXPERT HEURISTIC EVALUATION: Usability experts review the system using established principles called heuristics."
+        ]
+      },
+      {
+        "title": "Nielsen's Ten General UI Heuristics",
+        "paragraphs": [],
+        "list": [
+          "Visibility of system status",
+          "Match between system and the real world",
+          "User control and freedom",
+          "Consistency and standards",
+          "Error prevention",
+          "Recognition rather than recall",
+          "Flexibility and efficiency of use",
+          "Aesthetic and minimalist design",
+          "Help users recognize, diagnose, and recover from errors",
+          "Help and documentation"
+        ]
+      },
+      {
+        "title": "Measurement",
+        "paragraphs": [
+          "Collect numerical or survey-based data to measure effectiveness. Can involve time, error rates, or satisfaction scores."
+        ],
+        "list": []
+      },
+      {
+        "title": "3. Safety & Ethics",
+        "paragraphs": [
+          "Evaluations must be safe and respectful. Users should give informed consent before participating. Participants should always have the right to stop whenever they feel uncomfortable."
+        ],
+        "list": []
+      },
+      {
+        "title": "Summary",
+        "paragraphs": [
+          "Evaluating a user interface ensures that:"
+        ],
+        "list": [
+          "The system is easy to use (usability)",
+          "The experience is positive and enjoyable (UX)",
+          "The process is safe, ethical, and user-centered"
+        ]
+      }
+    ]
+  }
+]
