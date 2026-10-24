@@ -1,259 +1,428 @@
-import { saveProgress } from './storage.js';
+import { renderQuiz } from "./quiz.js";
 
-// Helper function for flexible string matching
-function isFlexibleMatch(userAnswer, correctAnswer) {
-  const clean = (str) => {
-    return String(str)
-      .toLowerCase()
-      .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?"'’]/g, "")
-      .replace(/\s+/g, " ")
-      .trim();
-  };
+export async function renderQuizSetup(container, subjectId) {
+    try {
+        const res = await fetch(`data/questions.json?v=${Date.now()}`);
 
-  const cleanedUser = clean(userAnswer);
-  const cleanedCorrect = clean(correctAnswer);
-
-  if (cleanedUser === cleanedCorrect) return true;
-
-  if (cleanedCorrect.length > 4 && cleanedUser.includes(cleanedCorrect)) {
-    return true;
-  }
-
-  return false;
-}
-
-// Fisher-Yates Shuffle Algorithm to randomize an array
-function shuffleArray(array) {
-  const shuffled = [...array];
-  for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-  }
-  return shuffled;
-}
-
-export async function renderQuiz(container, subjectId, customQuestions = null) {
-  try {
-    let questions = customQuestions;
-
-    // If no pre-filtered questions were passed, fetch them directly with cache-busting
-    if (!questions) {
-      const res = await fetch('data/questions.json?v=' + Date.now());
-      const allQuestions = await res.json();
-      questions = allQuestions[subjectId] || [];
-    }
-
-    if (questions.length === 0) {
-      container.innerHTML = '<div class="card"><h2>No Questions Match This Filter</h2><button onclick="window.location.reload()">Try Again</button></div>';
-      return;
-    }
-
-    // --- SHUFFLE QUESTIONS SO THEY ARE NEVER IN THE SAME PATTERN ---
-    questions = shuffleArray(questions);
-
-    let currentQ = 0;
-    let score = 0;
-
-    const showQuestion = () => {
-      if (currentQ >= questions.length) {
-        saveProgress(subjectId, score, questions.length);
-        container.innerHTML = `
-          <div class="card" style="text-align: center;">
-            <h2>Quiz Completed! 🎉</h2>
-            <p style="font-size: 1.2rem; margin: 1rem 0;">Your Score: ${score} / ${questions.length}</p>
-            <button onclick="window.location.hash='#progress'">View Progress</button>
-          </div>
-        `;
-        return;
-      }
-
-      const q = questions[currentQ];
-
-      // Render inputs based on question type
-      let inputHtml = '';
-      if (q.type === 'identification') {
-        inputHtml = `
-          <div style="margin: 1.5rem 0;">
-            <input type="text" id="ansInput" placeholder="Type your answer here..." class="card" style="width:100%; padding:0.8rem; font-size:1rem; border:1px solid var(--border-color); background:var(--bg-color); color:var(--text-main); border-radius:6px; margin-bottom:1rem;">
-            <button id="submitBtn">Submit Answer</button>
-          </div>
-        `;
-      } else if (q.type === 'enumeration') {
-        inputHtml = `
-          <div style="margin: 1.5rem 0;">
-            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.5rem;">Separate items with commas or new lines:</p>
-            <textarea id="ansInput" rows="4" placeholder="Item 1, Item 2, Item 3..." class="card" style="width:100%; padding:0.8rem; font-size:1rem; border:1px solid var(--border-color); background:var(--bg-color); color:var(--text-main); border-radius:6px; margin-bottom:1rem; resize:vertical;"></textarea>
-            <button id="submitBtn">Submit Answer</button>
-          </div>
-        `;
-      } else if (q.type === 'modified-true-false') {
-        inputHtml = `
-          <div style="margin: 1.5rem 0;">
-            <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
-              <label style="cursor: pointer;"><input type="radio" name="mtf-choice" value="True" style="margin-right: 5px;"> True</label>
-              <label style="cursor: pointer;"><input type="radio" name="mtf-choice" value="False" style="margin-right: 5px;"> False</label>
-            </div>
-            <div id="correction-container" style="margin-bottom: 1rem;">
-              <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.5rem;">If False, type the correction:</p>
-              <input type="text" id="mtfCorrection" placeholder="Enter correction..." class="card" style="width:100%; padding:0.8rem; font-size:1rem; border:1px solid var(--border-color); background:var(--bg-color); color:var(--text-main); border-radius:6px;">
-            </div>
-            <button id="submitBtn">Submit Answer</button>
-          </div>
-        `;
-      } else {
-        inputHtml = `
-          <div style="display: grid; gap: 0.5rem; margin-top: 1rem;">
-            ${q.options.map((opt, idx) => `
-              <button class="opt-btn" data-index="${idx}">${opt}</button>
-            `).join('')}
-          </div>
-        `;
-      }
-
-      container.innerHTML = `
-        <div class="card">
-          <div style="display:flex; justify-content:space-between; color:var(--text-muted); font-size:0.9rem; margin-bottom:0.5rem;">
-            <span>Type: ${q.type.toUpperCase()}</span>
-            <span>Question ${currentQ + 1} of ${questions.length}</span>
-          </div>
-          <h3>${q.question}</h3>
-          ${inputHtml}
-          <div id="feedback-area" style="margin-top: 1rem;"></div>
-        </div>
-      `;
-
-      // Evaluation and Feedback Logic
-      const evaluateAndShowFeedback = (userAnswer) => {
-        let isCorrect = false;
-
-        if (q.type === 'identification') {
-          isCorrect = isFlexibleMatch(userAnswer, q.answer);
-        } 
-        else if (q.type === 'enumeration') {
-          const userItems = String(userAnswer)
-            .split(/[\n,;]+/)
-            .map(item => item.trim())
-            .filter(item => item.length > 0);
-
-          const correctItems = q.answer.map(item => String(item).trim());
-          isCorrect = correctItems.every(reqItem => 
-            userItems.some(userItem => isFlexibleMatch(userItem, reqItem))
-          ) && userItems.length >= correctItems.length;
-        } 
-        else if (q.type === 'modified-true-false') {
-          const selectedRadio = document.querySelector('input[name="mtf-choice"]:checked');
-          if (!selectedRadio) {
-            alert('Please select True or False!');
-            return false;
-          }
-          const userChoice = selectedRadio.value; 
-          const userCorrection = document.getElementById('mtfCorrection').value;
-          
-          const expectedAnswer = String(q.answer); 
-          const expectedCorrection = String(q.correction || "");
-
-          if (userChoice === expectedAnswer) {
-            if (expectedAnswer === "True") {
-              isCorrect = true;
-            } else {
-              isCorrect = isFlexibleMatch(userCorrection, expectedCorrection);
-            }
-          } else {
-            isCorrect = false;
-          }
-        }
-        else {
-          isCorrect = (userAnswer === q.answer);
+        if (!res.ok) {
+            throw new Error("Unable to load questions.");
         }
 
-        if (isCorrect) score++;
+        const subject = allQuestions.find(
+          q => q.subjectId === subjectId
+        );
 
-        // Disable all inputs/buttons so the user can't change answer after submitting
-        if (q.type === 'identification' || q.type === 'enumeration') {
-          document.getElementById('submitBtn').disabled = true;
-          document.getElementById('ansInput').disabled = true;
-        } else if (q.type === 'modified-true-false') {
-          document.getElementById('submitBtn').disabled = true;
-          document.querySelectorAll('input[name="mtf-choice"]').forEach(r => r.disabled = true);
-          document.getElementById('mtfCorrection').disabled = true;
-        } else {
-          container.querySelectorAll('.opt-btn').forEach(btn => btn.disabled = true);
-        }
+        questions = subject ? subject.questions : [];
 
-        // Show instant visual feedback
-        const feedbackArea = document.getElementById('feedback-area');
-        if (isCorrect) {
-          feedbackArea.innerHTML = `
-            <div style="background-color: #d4edda; color: #155724; padding: 0.75rem; border-radius: 6px; margin-bottom: 1rem;">
-              <strong>✓ Correct!</strong> Great job.
-            </div>
-            <button id="nextBtn" style="background: #28a745; color: white;">Next Question →</button>
-          `;
-        } else {
-          let correctText = '';
-          if (q.type === 'multiple-choice' || q.type === 'true-false') {
-            correctText = q.options[q.answer];
-          } else if (q.type === 'modified-true-false') {
-            correctText = `${q.answer}${q.answer === 'False' ? ` (Correction: ${q.correction})` : ''}`;
-          } else if (Array.isArray(q.answer)) {
-            correctText = q.answer.join(', ');
-          } else {
-            correctText = q.answer;
-          }
+        if (questions.length === 0) {
+            container.innerHTML = `
+                <div class="card">
+                    <h2>No Questions Found</h2>
 
-          feedbackArea.innerHTML = `
-            <div style="background-color: #f8d7da; color: #721c24; padding: 0.75rem; border-radius: 6px; margin-bottom: 1rem;">
-              <strong>✗ Incorrect.</strong> The correct answer was: <em>${correctText}</em>
-            </div>
-            <button id="nextBtn" style="background: var(--text-muted); color: white;">Next Question →</button>
-          `;
-        }
+                    <p>
+                        There are no questions available for this subject yet.
+                    </p>
 
-        // Proceed to next question when clicking the generated Next button
-        document.getElementById('nextBtn').addEventListener('click', () => {
-          currentQ++;
-          showQuestion();
-        });
-
-        return true;
-      };
-
-      // Event Binding
-      if (q.type === 'identification' || q.type === 'enumeration') {
-        const submitBtn = document.getElementById('submitBtn');
-        const textInput = document.getElementById('ansInput');
-
-        const handleSubmission = () => {
-          const val = textInput.value;
-          if (!val.trim()) {
-            alert('Please provide an answer!');
+                    <button onclick="window.location.hash='#home'">
+                        Back Home
+                    </button>
+                </div>
+            `;
             return;
-          }
-          evaluateAndShowFeedback(val);
+        }
+
+        const typeLabels = {
+            "multiple-choice": "Multiple Choice",
+            "true-false": "True / False",
+            "modified-true-false": "Modified True / False",
+            "identification": "Identification",
+            "enumeration": "Enumeration"
         };
 
-        submitBtn.addEventListener('click', handleSubmission);
-        textInput.addEventListener('keypress', (e) => {
-          if (e.key === 'Enter' && q.type === 'identification') handleSubmission();
-        });
-      } else if (q.type === 'modified-true-false') {
-        const submitBtn = document.getElementById('submitBtn');
-        submitBtn.addEventListener('click', () => {
-          evaluateAndShowFeedback();
-        });
-      } else {
-        container.querySelectorAll('.opt-btn').forEach(btn => {
-          btn.addEventListener('click', (e) => {
-            const selected = parseInt(e.target.getAttribute('data-index'));
-            evaluateAndShowFeedback(selected);
-          });
-        });
-      }
-    };
+        const availableTypes = [...new Set(questions.map((q) => q.type))].sort();
 
-    showQuestion();
-  } catch (err) {
-    console.error('Quiz loading error:', err);
-    container.innerHTML = '<p>Failed to load quiz content.</p>';
-  }
+        container.innerHTML = `
+            <div class="card" style="max-width:550px;margin:40px auto;">
+
+                <h2 style="margin-bottom:10px;">
+                    Customize Quiz
+                </h2>
+
+                <p style="color:var(--text-muted);margin-bottom:25px;">
+                    Choose which type of questions you want to practice.
+                </p>
+
+                <label
+                    for="quizTypeSelect"
+                    style="
+                        display:block;
+                        margin-bottom:8px;
+                        font-weight:600;
+                    "
+                >
+                    Question Type
+                </label>
+
+                <select
+                    id="quizTypeSelect"
+                    style="
+                        width:100%;
+                        padding:12px;
+                        font-size:16px;
+                        border-radius:10px;
+                        border:1px solid var(--border-color);
+                        background:var(--bg-color);
+                        color:var(--text-main);
+                        margin-bottom:25px;
+                    "
+                >
+                    <option value="all">
+                        🎲 Mix All Types (${questions.length} Questions)
+                    </option>
+
+                    ${availableTypes
+                        .map((type) => {
+                            const count = questions.filter(
+                                (q) => q.type === type
+                            ).length;
+
+                            return `
+                                <option value="${type}">
+                                    ${typeLabels[type] || type}
+                                    (${count})
+                                </option>
+                            `;
+                        })
+                        .join("")}
+                </select>
+
+                <div
+                    style="
+                        display:flex;
+                        gap:15px;
+                    "
+                >
+
+                    <button
+                        id="startCustomQuizBtn"
+                        style="
+                            flex:1;
+                        "
+                    >
+                        🚀 Start Quiz
+                    </button>
+
+                    <button
+                        id="cancelQuizBtn"
+                        style="
+                            flex:1;
+                        "
+                    >
+                        Cancel
+                    </button>
+
+                </div>
+
+            </div>
+        `;
+
+        document
+            .getElementById("cancelQuizBtn")
+            .addEventListener("click", () => {
+                window.location.hash = "#home";
+            });
+
+        document
+            .getElementById("startCustomQuizBtn")
+            .addEventListener("click", () => {
+
+                const selectedType =
+                    document.getElementById("quizTypeSelect").value;
+
+                const filteredQuestions =
+                    selectedType === "all"
+                        ? questions
+                        : questions.filter(
+                              (q) => q.type === selectedType
+                          );
+
+                renderQuiz(
+                    container,
+                    subjectId,
+                    filteredQuestions
+                );
+
+            });
+
+    } catch (err) {
+        console.error(err);
+
+        container.innerHTML = `
+            <div class="card">
+
+                <h2>Quiz Setup Error</h2>
+
+                <p>
+                    Failed to load quiz setup.
+                </p>
+
+                <p style="color:var(--text-muted);">
+                    ${err.message}
+                </p>
+
+            </div>
+        `;
+    }
+}
+        function attachHandlers(q) {
+            const feedback = document.getElementById("feedback");
+
+            function nextQuestion() {
+                currentIndex++;
+                showQuestion();
+            }
+
+            function showFeedback(correct, correctAnswer = "") {
+                if (correct) {
+                    score++;
+
+                    feedback.innerHTML = `
+                        <div
+                            class="card"
+                            style="
+                                margin-top: 20px;
+                                border-left: 5px solid #28a745;
+                            "
+                        >
+                            <h4>✅ Correct!</h4>
+
+                            <button id="nextBtn">
+                                Next Question →
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    feedback.innerHTML = `
+                        <div
+                            class="card"
+                            style="
+                                margin-top: 20px;
+                                border-left: 5px solid #dc3545;
+                            "
+                        >
+                            <h4>❌ Incorrect</h4>
+
+                            <p>
+                                Correct Answer:
+                                <strong>${correctAnswer}</strong>
+                            </p>
+
+                            <button id="nextBtn">
+                                Next Question →
+                            </button>
+                        </div>
+                    `;
+                }
+
+                document
+                    .getElementById("nextBtn")
+                    .addEventListener("click", nextQuestion);
+            }
+
+            switch (q.type) {
+                case "multiple-choice":
+                    document
+                        .querySelectorAll(".option-btn")
+                        .forEach((btn) => {
+                            btn.addEventListener("click", () => {
+                                document
+                                    .querySelectorAll(".option-btn")
+                                    .forEach((b) => {
+                                        b.disabled = true;
+                                    });
+
+                                const selected = Number(btn.dataset.answer);
+
+                                const correct = selected === q.answer;
+
+                                showFeedback(
+                                    correct,
+                                    q.options[q.answer]
+                                );
+                            });
+                        });
+
+                    break;
+
+                case "true-false":
+                    document
+                        .querySelectorAll(".option-btn")
+                        .forEach((btn) => {
+                            btn.addEventListener("click", () => {
+                                document
+                                    .querySelectorAll(".option-btn")
+                                    .forEach((b) => {
+                                        b.disabled = true;
+                                    });
+
+                                const selected = btn.dataset.answer;
+
+                                const correct = selected === q.answer;
+
+                                showFeedback(
+                                    correct,
+                                    q.answer
+                                );
+                            });
+                        });
+
+                    break;
+
+                case "identification":
+                    document
+                        .getElementById("submitBtn")
+                        .addEventListener("click", () => {
+                            const answer = document
+                                .getElementById("answerInput")
+                                .value
+                                .trim();
+
+                            if (!answer) {
+                                alert("Please enter an answer.");
+                                return;
+                            }
+
+                            document.getElementById("submitBtn").disabled = true;
+                            document.getElementById("answerInput").disabled = true;
+
+                            showFeedback(
+                                isFlexibleMatch(answer, q.answer),
+                                q.answer
+                            );
+                        });
+
+                    break;
+                case "enumeration":
+                    document
+                        .getElementById("submitBtn")
+                        .addEventListener("click", () => {
+
+                            const rawAnswer = document
+                                .getElementById("answerInput")
+                                .value
+                                .trim();
+
+                            if (!rawAnswer) {
+                                alert("Please enter at least one answer.");
+                                return;
+                            }
+
+                            document.getElementById("submitBtn").disabled = true;
+                            document.getElementById("answerInput").disabled = true;
+
+                            const userAnswers = rawAnswer
+                                .split(/[\n,;]/)
+                                .map((item) => item.trim())
+                                .filter((item) => item.length > 0);
+
+                            const correctAnswers = q.answers || [];
+
+                            const correct = correctAnswers.every(
+                                (correctItem) =>
+                                    userAnswers.some((userItem) =>
+                                        isFlexibleMatch(
+                                            userItem,
+                                            correctItem
+                                        )
+                                    )
+                            );
+
+                            showFeedback(
+                                correct,
+                                correctAnswers.join(", ")
+                            );
+
+                        });
+
+                    break;
+
+                case "modified-true-false":
+                    document
+                        .getElementById("submitBtn")
+                        .addEventListener("click", () => {
+
+                            const selected = document.querySelector(
+                                'input[name="tfChoice"]:checked'
+                            );
+
+                            if (!selected) {
+                                alert("Select True or False.");
+                                return;
+                            }
+
+                            const correction = document
+                                .getElementById("correctionInput")
+                                .value
+                                .trim();
+
+                            document.getElementById("submitBtn").disabled = true;
+                            document.getElementById("correctionInput").disabled = true;
+
+                            document
+                                .querySelectorAll('input[name="tfChoice"]')
+                                .forEach((radio) => {
+                                    radio.disabled = true;
+                                });
+
+                            let correct = false;
+
+                            if (selected.value === "True") {
+                                correct = q.answer === "True";
+                            } else {
+                                correct =
+                                    q.answer === "False" &&
+                                    isFlexibleMatch(
+                                        correction,
+                                        q.correction
+                                    );
+                            }
+
+                            const answerText =
+                                q.answer === "False"
+                                    ? `False — ${q.correction}`
+                                    : "True";
+
+                            showFeedback(
+                                correct,
+                                answerText
+                            );
+
+                        });
+
+                    break;
+            }
+        }
+
+        showQuestion();
+    } catch (err) {
+        console.error("Quiz loading error:", err);
+
+        container.innerHTML = `
+            <div class="card">
+                <h2>Quiz Error</h2>
+
+                <p>
+                    Failed to load the quiz.
+                </p>
+
+                <p style="color: var(--text-muted);">
+                    ${err.message}
+                </p>
+
+                <button onclick="window.location.reload()">
+                    Try Again
+                </button>
+            </div>
+        `;
+    }
 }
