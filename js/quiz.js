@@ -316,7 +316,7 @@ function renderIdentification(area, q) {
 
 function renderEnumeration(area, q) {
 
-    const count = q.answer.length;
+    const count = q.answers.length;
 
     area.innerHTML = `
 
@@ -346,7 +346,7 @@ function renderEnumeration(area, q) {
 
             checkEnumeration(
                 answers,
-                q.answer
+                q.answers
             );
 
         });
